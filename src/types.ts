@@ -1,5 +1,8 @@
 import type { QuickPickItem } from 'vscode';
-import type { Section, Task, Project } from '@doist/todoist-api-typescript';
+import type { Section, Task, PersonalProject, WorkspaceProject } from '@doist/todoist-api-typescript';
+
+// Project can be either PersonalProject or WorkspaceProject
+export type Project = PersonalProject | WorkspaceProject;
 
 export type TodoistState = {
     lastSyncTime?: Date;
