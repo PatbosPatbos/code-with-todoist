@@ -40,7 +40,7 @@ export class ProjectsProvider implements vscode.TreeDataProvider<TodoistTreeItem
         if (element) {
             let treeView: TodoistTreeItem[] = [];
             if (data.projects && data.projects.length > 0) {
-                let projects = formatProjects(data.projects.filter(p => p.parentId && p.parentId === element.id!));
+                let projects = formatProjects(data.projects.filter(p => 'parentId' in p && p.parentId && p.parentId === element.id!));
                 treeView.push(...projects);
             }
             if (data.sections && data.sections.length > 0) {
@@ -74,11 +74,11 @@ export class ProjectsProvider implements vscode.TreeDataProvider<TodoistTreeItem
         }
         else {
             if (data.projects && data.projects.length > 0) {
-                return formatProjects(data.projects.filter(p => !p.parentId));
+                return formatProjects(data.projects.filter(p => !('parentId' in p) || !p.parentId));
             }
             else {
                 api.getProjects().then((projects) => {
-                    return formatProjects(projects.filter(p => !p.parentId));
+                    return formatProjects(projects.filter(p => !('parentId' in p) || !p.parentId));
                 });
             }
         }
@@ -111,20 +111,20 @@ function formatTasks(tasks: Task[]) {
         const sortByValue = SettingsHelper.getTaskSortBy();
         switch (sortByValue) {
             case SORT_BY.Order:
-                return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
+                return tasks.sort((a, b) => a.childOrder > b.childOrder ? 1 : -1);
             case SORT_BY.Priority:
                 return tasks.sort((a, b) => a.priority > b.priority ? -1 : 1);
             case SORT_BY.Alphabetical:
                 return tasks.sort((a, b) => a.content > b.content ? 1 : -1);
             default:
-                return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
+                return tasks.sort((a, b) => a.childOrder > b.childOrder ? 1 : -1);
         }
     }
 }
 
 function formatSections(sections: Section[]) {
     let displaySections: TodoistTreeItem[] = [];
-    sections = sections.sort((a, b) => a.order > b.order ? 1 : -1);
+    sections = sections.sort((a, b) => a.sectionOrder > b.sectionOrder ? 1 : -1);
     sections.forEach(s => {
         let treeview = new TodoistTreeItem(s.name);
         treeview.id = s.id;
@@ -140,7 +140,7 @@ function formatSections(sections: Section[]) {
 
 function formatProjects(projects: ProjectQuickPick[]) {
     let displayProjects: TodoistTreeItem[] = [];
-    projects = projects.sort((a, b) => a.order > b.order ? 1 : 0);
+    projects = projects.sort((a, b) => a.childOrder > b.childOrder ? 1 : 0);
     projects.forEach(p => {
         let treeview = new TodoistTreeItem(p.name);
         treeview.id = p.id;
@@ -153,10 +153,10 @@ function formatProjects(projects: ProjectQuickPick[]) {
     });
     return displayProjects;
 
-    function getIconPath(p: ProjectQuickPick): string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri; } | vscode.ThemeIcon | undefined {
+    function getIconPath(p: ProjectQuickPick): vscode.Uri | vscode.ThemeIcon | { light: vscode.Uri; dark: vscode.Uri; } | undefined {
         if (p.isShared) {
-            return path.join(__filename, '..', '..', '..', 'media', 'shared', p.color + '.svg');
+            return vscode.Uri.file(path.join(__filename, '..', '..', '..', 'media', 'shared', p.color + '.svg'));
         }
-        return path.join(__filename, '..', '..', '..', 'media', 'colours', p.color + '.svg');
+        return vscode.Uri.file(path.join(__filename, '..', '..', '..', 'media', 'colours', p.color + '.svg'));
     }
 }

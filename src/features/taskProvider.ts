@@ -68,8 +68,8 @@ export class TaskProvider implements vscode.TreeDataProvider<TodoistTreeItem> {
                     // Showing if the task is completed or pending
                     let taskCompletion = new TodoistTreeItem("Completed");
                     taskCompletion.collapsibleState = vscode.TreeItemCollapsibleState.None;
-                    taskCompletion.id = task.id + task.isCompleted;
-                    taskCompletion.description = taskCompletion.tooltip = task.isCompleted ? "Completed" : "Pending";
+                    taskCompletion.id = task.id + task.checked;
+                    taskCompletion.description = taskCompletion.tooltip = task.checked ? "Completed" : "Pending";
                     treeView.push(taskCompletion);
 
                     // Showing project the task belongs too

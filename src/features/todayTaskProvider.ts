@@ -71,13 +71,13 @@ function formatTasks(tasks: Task[]) {
         const sortByValue = SettingsHelper.getTaskSortBy();
         switch (sortByValue) {
             case SORT_BY.Order:
-                return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
+                return tasks.sort((a, b) => a.childOrder > b.childOrder ? 1 : -1);
             case SORT_BY.Priority:
                 return tasks.sort((a, b) => a.priority > b.priority ? -1 : 1);
             case SORT_BY.Alphabetical:
                 return tasks.sort((a, b) => a.content > b.content ? 1 : -1);
             default:
-                return tasks.sort((a, b) => a.order > b.order ? 1 : -1);
-        }        
+                return tasks.sort((a, b) => a.childOrder > b.childOrder ? 1 : -1);
+        }
     }
 }

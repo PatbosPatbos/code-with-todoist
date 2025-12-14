@@ -16,17 +16,17 @@ export default class TodoistAPIHelper {
 
         const api = await this.createApiClient();
 
-        const responseProjects = await api.getProjects().catch(this.handleApiRequestError);
+        const response = await api.getProjects().catch(this.handleApiRequestError);
 
         // Do not update if there are no projects (an error occurred)
-        if (responseProjects.length === 0) {
+        if (!response || response.results.length === 0) {
             return;
         }
 
         let data = SettingsHelper.getTodoistData(state);
         data.projects = [];
 
-        responseProjects.forEach((apiProject) => {
+        response.results.forEach((apiProject) => {
             data.projects.push(normalizeToProjectQuickPick(apiProject));
         });
 
@@ -37,15 +37,15 @@ export default class TodoistAPIHelper {
         const state = this.state;
 
         const api = await this.createApiClient();
-        const responseTasks = await api.getTasks().catch(this.handleApiRequestError);
+        const response = await api.getTasks().catch(this.handleApiRequestError);
 
         // Do not update if there are no tasks (an error occurred)
-        if (responseTasks.length === 0) {
+        if (!response || response.results.length === 0) {
             return;
         }
 
         let data = SettingsHelper.getTodoistData(state);
-        data.tasks = responseTasks;
+        data.tasks = response.results;
 
         SettingsHelper.setTodoistData(state, data);
     }
@@ -54,15 +54,15 @@ export default class TodoistAPIHelper {
         let state = this.state;
 
         const api = await this.createApiClient();
-        const responseSections = await api.getSections().catch(this.handleApiRequestError);
+        const response = await api.getSections().catch(this.handleApiRequestError);
 
         // Do not update if there are no sections (an error occurred)
-        if (responseSections.length === 0) {
+        if (!response || response.results.length === 0) {
             return;
         }
 
         let data = SettingsHelper.getTodoistData(state);
-        data.sections = responseSections;
+        data.sections = response.results;
 
         SettingsHelper.setTodoistData(state, data);
     }
@@ -105,17 +105,17 @@ export default class TodoistAPIHelper {
         const state = this.state;
 
         const api = await this.createApiClient();
-        const responseProjects = await api.getProjects().catch(this.handleApiRequestError);
+        const response = await api.getProjects().catch(this.handleApiRequestError);
 
         // Do not update if there are no projects (an error occurred)
-        if (responseProjects.length === 0) {
+        if (!response || response.results.length === 0) {
             throw new Error("Something went wrong when getting the projects.");
         }
 
         let data = SettingsHelper.getTodoistData(state);
         data.projects = [];
 
-        responseProjects.forEach((apiProject) => {
+        response.results.forEach((apiProject) => {
             data.projects.push(normalizeToProjectQuickPick(apiProject));
         });
 
@@ -128,14 +128,14 @@ export default class TodoistAPIHelper {
         const state = this.state;
 
         const api = await this.createApiClient();
-        const activeTasks = await api.getTasks().catch(this.handleApiRequestError);
+        const response = await api.getTasks().catch(this.handleApiRequestError);
 
         let data = SettingsHelper.getTodoistData(state);
-        data.tasks = activeTasks;
+        data.tasks = response.results;
 
         SettingsHelper.setTodoistData(state, data);
 
-        return activeTasks;
+        return response.results;
     }
 
     private async createApiClient() {
@@ -146,7 +146,7 @@ export default class TodoistAPIHelper {
         return new TodoistApi(apiToken);
     }
 
-    private handleApiRequestError(error: TodoistRequestError): never[] {
+    private handleApiRequestError(error: TodoistRequestError): never {
         if (error.httpStatusCode === 400) {
             throw new Error("Ensure Todoist API token is set. You can configure your API token using the 'Todoist: Set API Token' command.");
         }
