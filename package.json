@@ -1,0 +1,277 @@
+{
+	"name": "code-with-todoist",
+	"displayName": "code with Todoist",
+	"description": "Todoist plugin for vs code",
+	"version": "2.0.1",
+	"publisher": "Spoorthi",
+	"icon": "media/extension_icon.png",
+	"license": "SEE LICENSE IN LICENSE",
+	"repository": "https://github.com/spoo-bar/code-with-todoist",
+	"engines": {
+		"vscode": "^1.85.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"todoist",
+		"productivity"
+	],
+	"preview": false,
+	"activationEvents": [
+		"onCommand:todoist.setApiToken",
+		"onCommand:todoist.sync",
+		"onCommand:todoist.closeTask",
+		"onCommand:todoist.attachproject",
+		"onCommand:todoist.createTask",
+		"onCommand:todoist.openTask",
+		"onCommand:todoist.openTaskInBrowser",
+		"onCommand:todoist.openCustomTask",
+		"onView:projects",
+		"onView:workspaceProject"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "todoist.setApiToken",
+				"title": "Todoist: Set API Token",
+				"icon": {
+					"light": "media/light_add.svg",
+					"dark": "media/dark_add.svg"
+				}
+			},
+			{
+				"command": "todoist.sync",
+				"title": "Todoist : Sync Todoist",
+				"icon": {
+					"light": "media/light_refresh.svg",
+					"dark": "media/dark_refresh.svg"
+				}
+			},
+			{
+				"command": "todoist.closeTask",
+				"title": "Todoist : Mark task as done",
+				"icon": {
+					"light": "media/light_check.svg",
+					"dark": "media/dark_check.svg"
+				}
+			},
+			{
+				"command": "todoist.attachproject",
+				"title": "Todoist : Attach Project",
+				"icon": {
+					"light": "media/light_attach.svg",
+					"dark": "media/dark_attach.svg"
+				}
+			},
+			{
+				"command": "todoist.createTask",
+				"title": "Todoist : Create Task",
+				"icon": {
+					"light": "media/light_add.svg",
+					"dark": "media/dark_add.svg"
+				}
+			}
+		],
+		"configuration": [
+			{
+				"title": "Code With Todoist",
+				"properties": {
+					"syncInternval": {
+						"type": "number",
+						"default": 600000,
+						"description": "Value in milliseconds at which interval Todoist data is synced.",
+						"scope": "application",
+						"order": 1
+					},
+					"taskDisplay.sortBy": {
+						"type": "string",
+						"enum": [
+							"Order",
+							"Priority",
+							"Alphabetical"
+						],
+						"default": "Order",
+						"enumDescriptions": [
+							"Orders tasks by their Todoist task order",
+							"Sort tasks by priority. Highest -> Lowest",
+							"Sorts by alphabetical order of tasks"
+						],
+						"description": "Condition to sort the displayed tasks by.",
+						"scope": "application",
+						"order": 2
+					},
+					"taskDisplay.showTaskNotifications": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show notification within vscode for tasks which has time set",
+						"scope": "application",
+						"order": 3
+					},
+					"todayView.showTodaysTasks": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show today's tasks at the top of the extension sidebar",
+						"scope": "application",
+						"order": 4
+					},
+					"todayView.showOverdueTasks": {
+						"type": "boolean",
+						"default": true,
+						"markdownDescription": "Show overdue tasks in the today view. Requires `#todayView.showTodaysTasks` to be set to `true`",
+						"scope": "application",
+						"order": 5
+					},
+					"todayView.overdueDaysToDisplay": {
+						"type": "number",
+						"default": 1,
+						"markdownDescription": "Show overdue tasks for the given number of days. Example: If the value is set to 1, it shows overdue tasks from yesterday. If the value is set to 2, it shows overdue tasks from yesterday and day before. Requires `#todayView.showOverdueTasks` to be set to `true`",
+						"scope": "application",
+						"order": 6,
+						"minimum": 1,
+						"maximum": 7
+					},
+					"todayView.overdueDisplayPrefix": {
+						"type": "string",
+						"enum": [
+							"⏰",
+							"❗",
+							"📅",
+							"🔥",
+							"⏳"
+						],
+						"default": "❗",
+						"enumDescriptions": [
+							"Alarm Clock",
+							"Exclamation Mark",
+							"Calender",
+							"Fire",
+							"Hourglass"
+						],
+						"description": "Overdue tasks will be prefixed with this emoji in the Today view. The number of emojis in the prefix corresponds to the number of days the task is overdue.",
+						"scope": "application",
+						"order": 8
+					},
+					"identifyTodos.display": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show TODO comments from the workspace",
+						"scope": "application",
+						"deprecationMessage": "Not yet implemented. Feature in development."
+					},
+					"identifyTodos.regex": {
+						"type": "string",
+						"default": "(/.?((todo)|(fixme)).*)",
+						"description": "Identify the TODO comments in the project using the RegEx",
+						"scope": "application",
+						"deprecationMessage": "Not yet implemented. Feature in development."
+					}
+				}
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "todoist.closeTask",
+					"when": "view == task",
+					"group": "navigation"
+				},
+				{
+					"command": "todoist.createTask",
+					"when": "view == workspaceProject || view == workspaceProjectExt",
+					"group": "navigation"
+				},
+				{
+					"command": "todoist.sync",
+					"when": "view != task",
+					"group": "navigation"
+				},
+				{
+					"command": "todoist.attachproject",
+					"when": "view == workspaceProject || view == workspaceProjectExt",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "todoist.closeTask",
+					"when": "viewItem == todoistTask",
+					"group": "inline"
+				}
+			]
+		},
+		"views": {
+			"code-with-todoist": [
+				{
+					"id": "today",
+					"name": "Today",
+					"when": "showTodaysTasks"
+				},
+				{
+					"id": "workspaceProjectExt",
+					"name": "Workspace Project"
+				},
+				{
+					"id": "projects",
+					"name": "Projects"
+				},
+				{
+					"id": "task",
+					"name": "Task",
+					"when": "taskSelected"
+				}
+			],
+			"explorer": [
+				{
+					"id": "workspaceProject",
+					"name": "Workspace Project"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "code-with-todoist",
+					"title": "Code with Todoist",
+					"icon": "media/icon.svg"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "projects",
+				"contents": "No projects were loaded.\n___\n1. Check if Todoist API token is set up in File > Preferences > Settings > Code With Todoist.\n\n2. Check if your internet connection is working.\n\n3. Check if your Todoist account has any projects. \n___\nClick refresh in the above toolbar to attempt resync."
+			},
+			{
+				"view": "task",
+				"contents": "No task was selected."
+			},
+			{
+				"view": "today",
+				"contents": "No tasks for today. 🎉"
+			},
+			{
+				"view": "workspaceProject",
+				"contents": "This workspace is not associated with any Todoist Project. \n [Attach Project](command:todoist.attachproject)"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0",
+		"@types/vscode": "^1.62.0",
+		"@typescript-eslint/eslint-plugin": "^8.0.0",
+		"@typescript-eslint/parser": "^8.0.0",
+		"eslint": "^9.0.0",
+		"typescript": "^5.7.0"
+	},
+	"dependencies": {
+		"@doist/todoist-api-typescript": "^6.2.1"
+	}
+}
